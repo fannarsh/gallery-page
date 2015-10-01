@@ -398,7 +398,7 @@ img.emoji {
 .pagination {
   text-align:center;
   list-style-type:none;
-  margin:60px 0 0;
+  margin:60px 0 40px;
   padding:0;
 }
 
