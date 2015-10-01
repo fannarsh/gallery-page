@@ -1,0 +1,26 @@
+{
+  "name": "gallery-page",
+  "version": "1.0.0",
+  "description": "A basic gallery page for a Tagplay feed.",
+  "main": "index.js",
+  "dependencies": {
+    "tagplay-standalone-post": "^1.8.2",
+    "tagplay": "^1.0.1"
+  },
+  "devDependencies": {
+    "st": "^1.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tagplay/gallery-page.git"
+  },
+  "author": "Tagplay Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tagplay/gallery-page/issues"
+  },
+  "homepage": "https://github.com/tagplay/gallery-page#readme"
+}
