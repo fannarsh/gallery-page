@@ -2,20 +2,72 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Gallery</title>
+    <title>Háskóladagurinn</title>
     <link href="/assets/style.css" rel="stylesheet">
+    <style>
+      /* #919DB4 145, 157, 180 */
+      header {
+        padding: 0;
+      }
+
+      .spinner {
+        border-left:6px solid rgba(145,157,180,.15);
+        border-right:6px solid rgba(145,157,180,.15);
+        border-bottom:6px solid rgba(145,157,180,.15);
+        border-top:6px solid rgba(145,157,180,.8);
+      }
+
+      .img_header {
+        background: url('/assets/Haskoladagurinn_1920.jpg') no-repeat center center;
+        background-size: cover;
+        height: 340px;
+        min-width: 300px
+      }
+
+      .img_header img {
+        display: none;
+      }
+
+      .tagplay-media-text a {
+        color: #919DB4;
+      }
+
+      .pagination li {
+        border:1px solid #919DB4;
+        background:#FFF;
+      }
+
+      .pagination li:last-child {
+        border-right:1px solid #919DB4;
+      }
+
+      .pagination li a,
+      .pagination li span {
+        color: #919DB4;
+      }
+
+      .pagination li.active,
+      .pagination li.active span {
+        background:#919DB4;
+        border-color:#919DB4;
+        color:#FFF;
+      }
+
+    </style>
   </head>
   <body>
     <script>
       var CONFIG = {
-        project: '18792d68-252f-44ba-a084-342debef018f',
-        feed: '6df522da-e9a1-4c62-85ce-7eea0afe9f98',
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhsaW5AdGFncGxheS5jbyIsImFwaV9rZXkiOiJkZGNiNjBmYmIyZDIzNzMwYTFiOTNlY2Y1OWJjODZhMjJkOTZmMWM2IiwiZmVlZElkIjoiNmRmNTIyZGEtZTlhMS00YzYyLTg1Y2UtN2VlYTBhZmU5Zjk4IiwiaWF0IjoxNDQzNTQ3NzE3fQ.OiCyV4Mz788A3NaX9qWvnCykcFOcjxpw0vehqQgrD-U'
+        'include-like': false,
+        'include-flag': false,
+        project: '6feb67eb-bced-43fd-9995-b1a08a79f7da',
+        feed: '28d2b961-880e-43db-99b0-ce2de6622247',
+        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImZhbm5hcitoZGFndXJpbm5AdGFncGxheS5jbyIsImFwaV9rZXkiOiI5ZmQxZGRlNTI2YzEyYzg3NzdmODkyYzkxYjdmOTgxYzE5MzkyNzlmIiwiZmVlZElkIjoiMjhkMmI5NjEtODgwZS00M2RiLTk5YjAtY2UyZGU2NjIyMjQ3IiwiaWF0IjoxNDQ3MTc1NDA2fQ.zJaNacBAWtJgRzCx0gGhH6Z-OQekGRZz2liN0oMYvtk'
       }
     </script>
     <header>
-      <div class="wrapper">
-        <h1>Gallery</h1>
+      <div class="img_header">
+        <img src="/assets/Haskoladagurinn_1920.jpg" />
       </div>
     </header>
     <div class="wrapper">
