@@ -4,6 +4,7 @@
   "description": "A basic gallery page for a Tagplay feed.",
   "main": "index.js",
   "dependencies": {
+    "cluster-master": "^0.2.1",
     "tagplay": "^1.0.1",
     "tagplay-lightbox": "1.0.0",
     "tagplay-standalone-post": "^1.8.2",
