@@ -4,13 +4,24 @@ var Tagplay = require('tagplay');
 var lightbox = require('tagplay-lightbox');
 var postWidget = require('tagplay-standalone-post');
 var querystring = require('querystring');
+var extend = require('xtend');
 
 var postsPerPage = 18;
+var defaultConfig = {
+  'include-usernames': true,
+  'include-like': true,
+  'include-flag': true,
+  'include-dates': true,
+  'include-times': true,
+  include_captions: true,
+  'include-link-metadata': true
+};
 
 function Gallery (container, config) {
   if (!(this instanceof Gallery)) return new Gallery(container, config);
   console.log(container);
 
+  config = extend(defaultConfig, config);
   this.client = new Tagplay(config);
   this.config = extend(config);
   this.container = container;
@@ -135,7 +146,7 @@ Gallery.prototype.navigateToPage = function (page, cb) {
 
 Gallery.prototype.getNumPages = function () {
   return Math.ceil(this.totalPosts / postsPerPage);
-}
+};
 
 Gallery.prototype.addPagination = function () {
   this.container.appendChild(this.generatePagination(this.page, this.getNumPages()));
@@ -196,16 +207,4 @@ Gallery.prototype.generatePaginationItem = function (page, active, text) {
   return item;
 };
 
-function extend (config) {
-  config['include-usernames'] = true;
-  config['include-like'] = true;
-  config['include-flag'] = true;
-  config['include-dates'] = true;
-  config['include-times'] = true;
-  config.include_captions = true;
-  config['include-link-metadata'] = true;
-
-  return config;
-}
-
-Gallery(document.getElementById('gallery'), {project: window.TAGPLAY_PROJECT_ID, feed: window.TAGPLAY_FEED_ID, token: window.TAGPLAY_TOKEN});
+Gallery(document.getElementById('gallery'), window.CONFIG || {});

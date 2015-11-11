@@ -1,196 +1,28 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-// If obj.hasOwnProperty has been overridden, then calling
-// obj.hasOwnProperty(prop) will break.
-// See: https://github.com/joyent/node/issues/1707
-function hasOwnProperty(obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
-module.exports = function(qs, sep, eq, options) {
-  sep = sep || '&';
-  eq = eq || '=';
-  var obj = {};
-
-  if (typeof qs !== 'string' || qs.length === 0) {
-    return obj;
-  }
-
-  var regexp = /\+/g;
-  qs = qs.split(sep);
-
-  var maxKeys = 1000;
-  if (options && typeof options.maxKeys === 'number') {
-    maxKeys = options.maxKeys;
-  }
-
-  var len = qs.length;
-  // maxKeys <= 0 means that we should not limit keys count
-  if (maxKeys > 0 && len > maxKeys) {
-    len = maxKeys;
-  }
-
-  for (var i = 0; i < len; ++i) {
-    var x = qs[i].replace(regexp, '%20'),
-        idx = x.indexOf(eq),
-        kstr, vstr, k, v;
-
-    if (idx >= 0) {
-      kstr = x.substr(0, idx);
-      vstr = x.substr(idx + 1);
-    } else {
-      kstr = x;
-      vstr = '';
-    }
-
-    k = decodeURIComponent(kstr);
-    v = decodeURIComponent(vstr);
-
-    if (!hasOwnProperty(obj, k)) {
-      obj[k] = v;
-    } else if (isArray(obj[k])) {
-      obj[k].push(v);
-    } else {
-      obj[k] = [obj[k], v];
-    }
-  }
-
-  return obj;
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-},{}],2:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-var stringifyPrimitive = function(v) {
-  switch (typeof v) {
-    case 'string':
-      return v;
-
-    case 'boolean':
-      return v ? 'true' : 'false';
-
-    case 'number':
-      return isFinite(v) ? v : '';
-
-    default:
-      return '';
-  }
-};
-
-module.exports = function(obj, sep, eq, name) {
-  sep = sep || '&';
-  eq = eq || '=';
-  if (obj === null) {
-    obj = undefined;
-  }
-
-  if (typeof obj === 'object') {
-    return map(objectKeys(obj), function(k) {
-      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
-      if (isArray(obj[k])) {
-        return map(obj[k], function(v) {
-          return ks + encodeURIComponent(stringifyPrimitive(v));
-        }).join(sep);
-      } else {
-        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
-      }
-    }).join(sep);
-
-  }
-
-  if (!name) return '';
-  return encodeURIComponent(stringifyPrimitive(name)) + eq +
-         encodeURIComponent(stringifyPrimitive(obj));
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-function map (xs, f) {
-  if (xs.map) return xs.map(f);
-  var res = [];
-  for (var i = 0; i < xs.length; i++) {
-    res.push(f(xs[i], i));
-  }
-  return res;
-}
-
-var objectKeys = Object.keys || function (obj) {
-  var res = [];
-  for (var key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
-  }
-  return res;
-};
-
-},{}],3:[function(require,module,exports){
-'use strict';
-
-exports.decode = exports.parse = require('./decode');
-exports.encode = exports.stringify = require('./encode');
-
-},{"./decode":1,"./encode":2}],4:[function(require,module,exports){
 'use strict';
 
 var Tagplay = require('tagplay');
 var lightbox = require('tagplay-lightbox');
 var postWidget = require('tagplay-standalone-post');
 var querystring = require('querystring');
+var extend = require('xtend');
 
 var postsPerPage = 18;
+var defaultConfig = {
+  'include-usernames': true,
+  'include-like': true,
+  'include-flag': true,
+  'include-dates': true,
+  'include-times': true,
+  include_captions: true,
+  'include-link-metadata': true
+};
 
 function Gallery (container, config) {
   if (!(this instanceof Gallery)) return new Gallery(container, config);
   console.log(container);
 
+  config = extend(defaultConfig, config);
   this.client = new Tagplay(config);
   this.config = extend(config);
   this.container = container;
@@ -315,7 +147,7 @@ Gallery.prototype.navigateToPage = function (page, cb) {
 
 Gallery.prototype.getNumPages = function () {
   return Math.ceil(this.totalPosts / postsPerPage);
-}
+};
 
 Gallery.prototype.addPagination = function () {
   this.container.appendChild(this.generatePagination(this.page, this.getNumPages()));
@@ -376,21 +208,274 @@ Gallery.prototype.generatePaginationItem = function (page, active, text) {
   return item;
 };
 
-function extend (config) {
-  config['include-usernames'] = true;
-  config['include-like'] = true;
-  config['include-flag'] = true;
-  config['include-dates'] = true;
-  config['include-times'] = true;
-  config.include_captions = true;
-  config['include-link-metadata'] = true;
+Gallery(document.getElementById('gallery'), window.CONFIG || {});
 
-  return config;
+},{"querystring":4,"tagplay":11,"tagplay-lightbox":5,"tagplay-standalone-post":6,"xtend":16}],2:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+// If obj.hasOwnProperty has been overridden, then calling
+// obj.hasOwnProperty(prop) will break.
+// See: https://github.com/joyent/node/issues/1707
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-Gallery(document.getElementById('gallery'), {project: window.TAGPLAY_PROJECT_ID, feed: window.TAGPLAY_FEED_ID, token: window.TAGPLAY_TOKEN});
+module.exports = function(qs, sep, eq, options) {
+  sep = sep || '&';
+  eq = eq || '=';
+  var obj = {};
 
-},{"querystring":3,"tagplay":10,"tagplay-lightbox":15,"tagplay-standalone-post":5}],5:[function(require,module,exports){
+  if (typeof qs !== 'string' || qs.length === 0) {
+    return obj;
+  }
+
+  var regexp = /\+/g;
+  qs = qs.split(sep);
+
+  var maxKeys = 1000;
+  if (options && typeof options.maxKeys === 'number') {
+    maxKeys = options.maxKeys;
+  }
+
+  var len = qs.length;
+  // maxKeys <= 0 means that we should not limit keys count
+  if (maxKeys > 0 && len > maxKeys) {
+    len = maxKeys;
+  }
+
+  for (var i = 0; i < len; ++i) {
+    var x = qs[i].replace(regexp, '%20'),
+        idx = x.indexOf(eq),
+        kstr, vstr, k, v;
+
+    if (idx >= 0) {
+      kstr = x.substr(0, idx);
+      vstr = x.substr(idx + 1);
+    } else {
+      kstr = x;
+      vstr = '';
+    }
+
+    k = decodeURIComponent(kstr);
+    v = decodeURIComponent(vstr);
+
+    if (!hasOwnProperty(obj, k)) {
+      obj[k] = v;
+    } else if (isArray(obj[k])) {
+      obj[k].push(v);
+    } else {
+      obj[k] = [obj[k], v];
+    }
+  }
+
+  return obj;
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+},{}],3:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+var stringifyPrimitive = function(v) {
+  switch (typeof v) {
+    case 'string':
+      return v;
+
+    case 'boolean':
+      return v ? 'true' : 'false';
+
+    case 'number':
+      return isFinite(v) ? v : '';
+
+    default:
+      return '';
+  }
+};
+
+module.exports = function(obj, sep, eq, name) {
+  sep = sep || '&';
+  eq = eq || '=';
+  if (obj === null) {
+    obj = undefined;
+  }
+
+  if (typeof obj === 'object') {
+    return map(objectKeys(obj), function(k) {
+      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+      if (isArray(obj[k])) {
+        return map(obj[k], function(v) {
+          return ks + encodeURIComponent(stringifyPrimitive(v));
+        }).join(sep);
+      } else {
+        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+      }
+    }).join(sep);
+
+  }
+
+  if (!name) return '';
+  return encodeURIComponent(stringifyPrimitive(name)) + eq +
+         encodeURIComponent(stringifyPrimitive(obj));
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+function map (xs, f) {
+  if (xs.map) return xs.map(f);
+  var res = [];
+  for (var i = 0; i < xs.length; i++) {
+    res.push(f(xs[i], i));
+  }
+  return res;
+}
+
+var objectKeys = Object.keys || function (obj) {
+  var res = [];
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
+  }
+  return res;
+};
+
+},{}],4:[function(require,module,exports){
+'use strict';
+
+exports.decode = exports.parse = require('./decode');
+exports.encode = exports.stringify = require('./encode');
+
+},{"./decode":2,"./encode":3}],5:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  open: openLightbox,
+  close: closeLightbox
+};
+
+function openLightbox (content, canNavigate, navigate, id) {
+  closeLightbox();
+
+  var backdrop = document.createElement('div');
+  backdrop.setAttribute('class', 'tagplay-lightbox-backdrop');
+  backdrop.setAttribute('tabindex', 0);
+  backdrop.onkeydown = function (e) {
+    if (!e) e = window.event;
+    if (e.keyCode === 37) {
+      navigate(-1);
+    } else if (e.keyCode === 39) {
+      navigate(1);
+    } else if (e.keyCode === 27) {
+      closeLightbox();
+    }
+  };
+
+  var lightbox = document.createElement('div');
+  lightbox.setAttribute('class', 'tagplay-lightbox');
+  if (id) {
+    lightbox.setAttribute('id', id);
+  }
+
+  document.body.originalOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+
+  lightbox.appendChild(content);
+
+  if (canNavigate(-1)) {
+    lightbox.appendChild(arrow(-1, navigate, 'tagplay-lightbox-prev'));
+  }
+  if (canNavigate(1)) {
+    lightbox.appendChild(arrow(1, navigate, 'tagplay-lightbox-next'));
+  }
+
+  backdrop.onclick = function (e) {
+    var shouldClose = true;
+    var currentTarget = e.target;
+    while (currentTarget) {
+      if (currentTarget === lightbox) {
+        shouldClose = false;
+        break;
+      }
+      currentTarget = currentTarget.parentNode;
+    }
+    if (shouldClose) closeLightbox();
+  };
+
+  backdrop.appendChild(lightbox);
+  document.body.appendChild(backdrop);
+  backdrop.focus();
+}
+
+function closeLightbox () {
+  var existingBackdrop = document.getElementsByClassName('tagplay-lightbox-backdrop');
+  if (existingBackdrop.length > 0) {
+    for (var i = 0; i < existingBackdrop.length; i++) {
+      document.body.removeChild(existingBackdrop[i]);
+    }
+    document.body.style.overflow = document.body.originalOverflow || 'auto';
+  }
+}
+
+function arrow (direction, navigate, className) {
+  var a = document.createElement('a');
+  a.setAttribute('href', '#');
+  a.setAttribute('class', className);
+  a.onclick = function (e) {
+    if (!e) e = window.event;
+    e.cancelBubble = true;
+    if (e.stopPropagation) e.stopPropagation();
+
+    navigate(direction);
+    return false;
+  };
+  return a;
+}
+
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var img = require('img');
@@ -700,7 +785,7 @@ function link (href) {
   return linkElem;
 }
 
-},{"img":6,"tagplay-text":7,"twemoji":9}],6:[function(require,module,exports){
+},{"img":7,"tagplay-text":8,"twemoji":10}],7:[function(require,module,exports){
 module.exports = img;
 
 function img (src, opt, callback) {
@@ -735,7 +820,7 @@ function img (src, opt, callback) {
   return el;
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 var twttrtxt = require('twitter-text');
@@ -885,7 +970,7 @@ function htmlize(text, provider, links, strippedTags, normalize) {
 
     return result;
 }
-},{"twitter-text":8}],8:[function(require,module,exports){
+},{"twitter-text":9}],9:[function(require,module,exports){
 (function() {
   if (typeof twttr === "undefined" || twttr === null) {
     var twttr = {};
@@ -2243,7 +2328,7 @@ function htmlize(text, provider, links, strippedTags, normalize) {
   }
 })();
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (global){
 var location = global.location || {};
 /*jslint indent: 2, browser: true, bitwise: true, plusplus: true */
@@ -2840,7 +2925,7 @@ if (!location.protocol) {
 }
 module.exports = twemoji;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var request = require('./request.js');
@@ -2907,7 +2992,7 @@ Client.prototype.unflagPost = function(project_id, feed_id, post_id, cb) {
   request.post(url, this._token, null, cb);
 };
 
-},{"./request.js":14}],11:[function(require,module,exports){
+},{"./request.js":15}],12:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -3990,7 +4075,7 @@ request.put = function(url, data, fn){
 
 module.exports = request;
 
-},{"emitter":12,"reduce":13}],12:[function(require,module,exports){
+},{"emitter":13,"reduce":14}],13:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -4156,7 +4241,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 
 /**
  * Reduce `arr` with `fn`.
@@ -4181,7 +4266,7 @@ module.exports = function(arr, fn, initial){
   
   return curr;
 };
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 var request = require('superagent');
@@ -4228,90 +4313,25 @@ function querystring(options) {
   return qs.length ? '?' + qs.join('&') : '';
 }
 
-},{"superagent":11}],15:[function(require,module,exports){
-'use strict';
+},{"superagent":12}],16:[function(require,module,exports){
+module.exports = extend
 
-module.exports = {
-  open: openLightbox,
-  close: closeLightbox
-};
+var hasOwnProperty = Object.prototype.hasOwnProperty;
 
-function openLightbox (content, canNavigate, navigate, id) {
-  closeLightbox();
+function extend() {
+    var target = {}
 
-  var backdrop = document.createElement('div');
-  backdrop.setAttribute('class', 'tagplay-lightbox-backdrop');
-  backdrop.setAttribute('tabindex', 0);
-  backdrop.onkeydown = function (e) {
-    if (!e) e = window.event;
-    if (e.keyCode === 37) {
-      navigate(-1);
-    } else if (e.keyCode === 39) {
-      navigate(1);
-    } else if (e.keyCode === 27) {
-      closeLightbox();
+    for (var i = 0; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        for (var key in source) {
+            if (hasOwnProperty.call(source, key)) {
+                target[key] = source[key]
+            }
+        }
     }
-  };
 
-  var lightbox = document.createElement('div');
-  lightbox.setAttribute('class', 'tagplay-lightbox');
-  if (id) {
-    lightbox.setAttribute('id', id);
-  }
-
-  document.body.originalOverflow = document.body.style.overflow;
-  document.body.style.overflow = 'hidden';
-
-  lightbox.appendChild(content);
-
-  if (canNavigate(-1)) {
-    lightbox.appendChild(arrow(-1, navigate, 'tagplay-lightbox-prev'));
-  }
-  if (canNavigate(1)) {
-    lightbox.appendChild(arrow(1, navigate, 'tagplay-lightbox-next'));
-  }
-
-  backdrop.onclick = function (e) {
-    var shouldClose = true;
-    var currentTarget = e.target;
-    while (currentTarget) {
-      if (currentTarget === lightbox) {
-        shouldClose = false;
-        break;
-      }
-      currentTarget = currentTarget.parentNode;
-    }
-    if (shouldClose) closeLightbox();
-  };
-
-  backdrop.appendChild(lightbox);
-  document.body.appendChild(backdrop);
-  backdrop.focus();
+    return target
 }
 
-function closeLightbox () {
-  var existingBackdrop = document.getElementsByClassName('tagplay-lightbox-backdrop');
-  if (existingBackdrop.length > 0) {
-    for (var i = 0; i < existingBackdrop.length; i++) {
-      document.body.removeChild(existingBackdrop[i]);
-    }
-    document.body.style.overflow = document.body.originalOverflow || 'auto';
-  }
-}
-
-function arrow (direction, navigate, className) {
-  var a = document.createElement('a');
-  a.setAttribute('href', '#');
-  a.setAttribute('class', className);
-  a.onclick = function (e) {
-    if (!e) e = window.event;
-    e.cancelBubble = true;
-    if (e.stopPropagation) e.stopPropagation();
-
-    navigate(direction);
-    return false;
-  };
-  return a;
-}
-
-},{}]},{},[4]);
+},{}]},{},[1]);

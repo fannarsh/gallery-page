@@ -4,15 +4,20 @@
   "description": "A basic gallery page for a Tagplay feed.",
   "main": "index.js",
   "dependencies": {
+    "tagplay": "^1.0.1",
     "tagplay-lightbox": "1.0.0",
     "tagplay-standalone-post": "^1.8.2",
-    "tagplay": "^1.0.1"
+    "xtend": "^4.0.1"
   },
   "devDependencies": {
+    "browserify": "^12.0.1",
     "st": "^1.0.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify index.js -o assets/bundle.js",
+    "local-server": "st",
+    "prelocal-server": "npm run build"
   },
   "repository": {
     "type": "git",
