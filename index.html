@@ -53,6 +53,31 @@
         color:#FFF;
       }
 
+      .gallery-header-links {
+        background: #919DB4;
+        text-align: center;
+      }
+
+      .gallery-header-links ul {
+        margin:0;
+        padding: 6px 0;
+      }
+
+      .gallery-header-links ul > li {
+          list-style: none;
+          display: inline-block;
+          zoom:1;
+          *display:inline;
+          /* this fix is needed for IE7- */
+      }
+
+      .gallery-header-links ul > li > a {
+        text-decoration: underline;
+        color: #fff;
+        padding: 3px 8px;
+        font-size: smaller;
+      }
+
     </style>
   </head>
   <body>
@@ -70,6 +95,17 @@
         <img src="/assets/Haskoladagurinn_1920.jpg" />
       </div>
     </header>
+    <div class="gallery-header-links">
+      <ul>
+        <li><a href="http://www.unak.is/">Háskólinn á Akureyri</a></li>
+        <li><a href="http://www.bifrost.is/">Háskólinn á Bifröst</a></li>
+        <li><a href="http://www.holar.is/">Háskólinn á Hólum</a></li>
+        <li><a href="http://www.ru.is/">Háskólinn í Reykjavík</a></li>
+        <li><a href="http://www.hi.is/">Háskóli Íslands</a></li>
+        <li><a href="http://www.lbhi.is/">Landbúnaðarháskóli Íslands</a></li>
+        <li><a href="http://lhi.is/">Listaháskóli Íslands</a></li>
+      </ul>
+    </div>
     <div class="wrapper">
       <div id="gallery"></div>
     </div>
